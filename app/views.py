@@ -9,24 +9,43 @@ def index_page(request):
     return render(request, 'index.html')
 
 def home(request):
-    images= services.getAllImages()
-    favourite_list= []
+
+    """
+    Muestra la pagina principal con todas las imagenes de los personajes.
+
+    1- Obtiene todas las imagenes desde el services.getAllImages().
+    2- Crea una lista vacia para los favoritos (en este punto no se muestran los favoritos).
+    3- Renderiza el template 'home.html' enviando las imagenes y favoritos.
+    """
+    images= services.getAllImages() # Trae todas las imagenes desde el services 
+
+    favourite_list= [] # Lista vacia de favoritos 
 
     return render(request, 'home.html', {'images': images,'favourite_list': favourite_list})
 
 def search(request):
+
+    """
+    Busca personajes por nombre.
+
+    1- Verifica que la solicitud sea POST.
+    2- Obtiene el texto ingresado en el campo 'query'.
+    3- Si el campo está vacío, redirige al home.
+    4- Filtra las imagenes por nombre usando services.filterByCharacter(query).
+    5- Renderiza el home con los resultados filtrados
+    """
     if request.method == "POST":
-        query = request.POST.get('query', '').strip()
+        query = request.POST.get('query', '').strip() # Texto buscado
 
         
         if not query:
-            return redirect('home')
+            return redirect('home') # Si el campo está vacío, redirige al home
 
         
-        images = services.filterByCharacter(query)
+        images = services.filterByCharacter(query) # Filtra por nombre
 
        
-        favourite_list = []
+        favourite_list = [] # Lista vacia de favoritos
 
         return render(request, 'home.html', {
             'images': images,
@@ -35,23 +54,31 @@ def search(request):
 
     
     return redirect('home')
-    """
-    Busca personajes por nombre.
-    
-    Se debe implementar la búsqueda de personajes según el nombre ingresado.
-    Se debe obtener el parámetro 'query' desde el POST, filtrar las imágenes según el nombre
-    y renderizar 'home.html' con los resultados. Si no se ingresa nada, redirigir a 'home'.
-    """
+
     pass
 
 def filter_by_status(request):
+
+    """
+    Filtra personajes por su estado (Alive o Deceased).
+
+    1- Verifica que la peticion sea POST.
+    2- Obtiene el estado desde el formulario.
+    3- Si no hay estado, redirige al home.
+    4- Filtra las imagenes por estado usando services.filterByStatus(status).
+    5- Si el usuario esta logueado, obtiene su lista de favoritos, sino deja la lista vacia.
+    6- Renderiza el home con los resultados.
+    """
+
     if request.method == "POST":
         status = request.POST.get('status', '').strip()  # Alive o Deceased
+        
         if not status:
             return redirect('home')
 
-        images = services.filterByStatus(status)
+        images = services.filterByStatus(status) # Filtra por estado
 
+        # Obtiene favoritos si el usuario esta autenticado, sino lista vacia
         if request.user.is_authenticated:
             favourite_list = services.getAllFavourites(request)
         else:
@@ -63,13 +90,7 @@ def filter_by_status(request):
         })
 
     return redirect('home')
-    """
-    Filtra personajes por su estado (Alive/Deceased).
-    
-    Se debe implementar el filtrado de personajes según su estado.
-    Se debe obtener el parámetro 'status' desde el POST, filtrar las imágenes según ese estado
-    y renderizar 'home.html' con los resultados. Si no hay estado, redirigir a 'home'.
-    """
+
     pass
 
 # Estas funciones se usan cuando el usuario está logueado en la aplicación.

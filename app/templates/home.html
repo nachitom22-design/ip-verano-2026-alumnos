@@ -28,14 +28,17 @@
    
 <div class="row row-cols-1 row-cols-md-3 g-4">
 
+  <!-- Si no hay imagenes, muestra un mensaje -->
   {% if images|length == 0 %}
     <div class="col-12">
       <h2 class="text-center">La búsqueda no arrojó resultados...</h2>
     </div>
   {% else %}
 
+    <!-- Recorre cada personaje de la lista de imagenes -->
     {% for img in images %}
       <div class="col">
+            <!-- Card de cada personaje, el borde cambia según el estado del personaje -->
             <div class="card h-100 shadow-sm
                 {% if img.status == 'Alive' %}
                     border-success
@@ -58,7 +61,7 @@
             <div class="col-md-8">
               <div class="card-body">
                 <h5 class="card-title text-center">{{ img.name }}</h5>
-                
+                <!-- Frase aleatoria del personaje, si no hay frases muestra un mensaje vacío -->
                 <div class="alert alert-warning p-2 text-center">
                     {% if img.phrases %}
                         "{{ img.phrases|random }}"

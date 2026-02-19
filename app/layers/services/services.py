@@ -9,35 +9,62 @@ from django.contrib.auth import get_user
 def getAllImages():
 
     """
-    Obtiene todas las imágenes de personajes desde la API y las convierte en objetos Card.
-    
-    Esta función debe obtener los datos desde transport, transformarlos en Cards usando 
-    translator y retornar una lista de objetos Card.
-    """
-    data = transport.getAllImages()
+    Obtiene todas las imagenes de personajes desde la API y las convierte en objetos card.
 
-    cards = []
+    1- Llama a transport.getAllImages() para obtener los datos crudos de la API.
+    2- Recorre cada personaje recibido.
+    3- Convierte cada personaje en un objeto card usando translator.fromRequestIntoCard().
+    4. Guarda cada card en una lista.
+    5- Retorna la lista final de Cards.
+    """
+
+    data = transport.getAllImages() # Trae los datos desde la API
+
+    cards = [] # Lista donde se guardaran las cards convertidas
+
     for character in data:
+        # Convierte el personaje en un objeto Card
         card = translator.fromRequestIntoCard(character)
-        cards.append(card)
-    return cards
+        cards.append(card) # Agrega la card a la lista
+
+    return cards # Retorna todas las cards  
 
 def filterByCharacter(name):
-    all_cards = getAllImages()
+    """
+    Filtra las cards de los personajes segun el nombre proporcionado.
+
+    1- Obtiene todas las cards disponibles.
+    2- Recorre cada card.
+    3- Compara si el nombre buscado esta contenido dentro del nombre del personaje (ignorando mayúsculas).
+    4- Devuelve solo las cards que coinciden.
+    """
+    all_cards = getAllImages() # Obtiene todas las cards
+
+    # Filtra las cards cuyo nombre contiene el texto buscado (ignorando mayúsculas)
     filtered = [card for card in all_cards if name.lower() in card.name.lower()]
-    return filtered
-    """
-    Filtra las cards de personajes según el nombre proporcionado.
     
-    Se debe filtrar los personajes cuyo nombre contenga el parámetro recibido. Retorna una lista de Cards filtradas.
-    """
+    return filtered # Retorna la lista filtrada
+
 
     pass
 
 def filterByStatus(status_name):
-    all_cards = getAllImages()
+
+    """
+    Filtra las cards de los personajes segun su estado (Alive o Deceased).
+    
+    1- Obtiene todas las cards.
+    2- Recorre cada card.
+    3- Compara el estado de la card con el estado recibido (ignorando mayúsculas).
+    4- Devuelve solo las cards que coinciden con el estado buscado.
+    """
+
+    all_cards = getAllImages() # Obtiene todas las cards
+
+    # Filtra por estado, comparando el estado de cada card con el estado buscado (ignorando mayúsculas)
     filtered = [card for card in all_cards if card.status.lower() == status_name.lower()]
-    return filtered
+    
+    return filtered # Retorna la lista filtrada
 
 # añadir favoritos (usado desde el template 'home.html')
 def saveFavourite(request):
