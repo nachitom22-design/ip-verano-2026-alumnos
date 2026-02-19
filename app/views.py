@@ -9,19 +9,32 @@ def index_page(request):
     return render(request, 'index.html')
 
 def home(request):
-    """
-    Vista principal que muestra la galería de personajes de Los Simpsons.
-    
-    Esta función debe obtener el listado de imágenes desde la capa de servicios
-    y también el listado de favoritos del usuario, para luego enviarlo al template 'home.html'.
-    Recordar que los listados deben pasarse en el contexto con las claves 'images' y 'favourite_list'.
-    """
-    images = []
-    favourite_list = []
+    images= services.getAllImages()
+    favourite_list= []
 
-    return render(request, 'home.html', { 'images': images, 'favourite_list': favourite_list })
+    return render(request, 'home.html', {'images': images,'favourite_list': favourite_list})
 
 def search(request):
+    if request.method == "POST":
+        query = request.POST.get('query', '').strip()
+
+        
+        if not query:
+            return redirect('home')
+
+        
+        images = services.filterByCharacter(query)
+
+       
+        favourite_list = []
+
+        return render(request, 'home.html', {
+            'images': images,
+            'favourite_list': favourite_list
+        })
+
+    
+    return redirect('home')
     """
     Busca personajes por nombre.
     
@@ -32,6 +45,24 @@ def search(request):
     pass
 
 def filter_by_status(request):
+    if request.method == "POST":
+        status = request.POST.get('status', '').strip()  # Alive o Deceased
+        if not status:
+            return redirect('home')
+
+        images = services.filterByStatus(status)
+
+        if request.user.is_authenticated:
+            favourite_list = services.getAllFavourites(request)
+        else:
+            favourite_list = []
+
+        return render(request, 'home.html', {
+            'images': images,
+            'favourite_list': favourite_list
+        })
+
+    return redirect('home')
     """
     Filtra personajes por su estado (Alive/Deceased).
     
